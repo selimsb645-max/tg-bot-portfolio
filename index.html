@@ -5,64 +5,233 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Selim SB · Telegram Bot Developer</title>
 <meta name="description" content="Custom Telegram bot development: order bots, payment integration, admin dashboards, automation. Python, APIs, 24/7 cloud deployment.">
+<meta name="theme-color" content="#070d18">
 <style>
   :root{
-    --navy:#0b1220; --navy2:#111c2f; --card:#152034; --line:#22314b;
-    --red:#e11d1d; --red2:#ff3b3b; --text:#eef2f9; --muted:#9fb0c9; --gold:#f0b429;
+    --bg:#070d18;
+    --bg-2:#0b1524;
+    --card:rgba(20,32,52,.72);
+    --card-solid:#101d31;
+    --line:rgba(120,150,190,.16);
+    --line-strong:rgba(140,170,210,.28);
+    --text:#f2f6fc;
+    --muted:#96a9c4;
+    --red:#ff3b3b;
+    --red-deep:#c21313;
+    --gold:#f5c451;
+    --sky:#5aa9ff;
+    --radius:20px;
   }
   *{box-sizing:border-box; margin:0; padding:0}
+  html{scroll-behavior:smooth}
   body{
-    background:radial-gradient(1200px 600px at 80% -10%, #1a2a44 0%, var(--navy) 55%) no-repeat, var(--navy);
+    background:var(--bg);
     color:var(--text);
     font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Noto Sans Bengali",Arial,sans-serif;
-    line-height:1.6; -webkit-font-smoothing:antialiased;
+    line-height:1.65;
+    -webkit-font-smoothing:antialiased;
+    overflow-x:hidden;
   }
-  .wrap{max-width:960px; margin:0 auto; padding:28px 20px 60px}
-  .topbar{display:flex; align-items:center; justify-content:space-between; gap:12px; padding:6px 0 26px}
-  .brand{display:flex; align-items:center; gap:10px; font-weight:800; letter-spacing:.4px}
-  .logo{width:40px; height:40px; border-radius:50%; background:linear-gradient(140deg,#1e3a8a,#0b1220);
-        border:2px solid rgba(255,255,255,.12); display:grid; place-items:center; font-size:15px; font-weight:900; color:#fff}
-  .logo b{color:var(--red2)}
-  .pill{border:1px solid var(--line); color:var(--muted); font-size:12px; padding:6px 12px; border-radius:999px; white-space:nowrap}
-  h1{font-size:36px; line-height:1.15; letter-spacing:-.5px; margin:6px 0 12px}
-  h1 span{color:var(--red2)}
-  .lead{color:var(--muted); font-size:17px; max-width:640px}
-  .chips{display:flex; flex-wrap:wrap; gap:8px; margin:20px 0 8px}
-  .chip{background:#12203a; border:1px solid var(--line); color:#cfe0f7; font-size:13px; padding:7px 12px; border-radius:999px}
-  .cta{display:flex; flex-wrap:wrap; gap:10px; margin-top:22px}
-  .btn{display:inline-block; padding:13px 20px; border-radius:12px; font-weight:700; text-decoration:none; font-size:15px}
-  .btn-primary{background:linear-gradient(135deg,var(--red2),#b91212); color:#fff; box-shadow:0 8px 24px rgba(225,29,29,.25)}
-  .btn-ghost{border:1px solid var(--line); color:var(--text); background:#101c30}
-  section{margin-top:46px}
-  h2{font-size:13px; letter-spacing:2px; text-transform:uppercase; color:var(--gold); margin-bottom:16px}
+  body::before{
+    content:""; position:fixed; inset:0; z-index:-2;
+    background:
+      radial-gradient(900px 480px at 85% -8%, rgba(255,59,59,.16), transparent 60%),
+      radial-gradient(800px 520px at 8% 4%, rgba(90,169,255,.14), transparent 62%),
+      radial-gradient(700px 700px at 50% 110%, rgba(245,196,81,.07), transparent 60%),
+      linear-gradient(180deg,#070d18 0%, #08111f 55%, #060b14 100%);
+  }
+  body::after{
+    content:""; position:fixed; inset:0; z-index:-1; opacity:.35; pointer-events:none;
+    background-image:
+      linear-gradient(rgba(140,170,210,.05) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(140,170,210,.05) 1px, transparent 1px);
+    background-size:64px 64px;
+    mask-image:radial-gradient(circle at 50% 0%, #000 0%, transparent 72%);
+  }
+  .wrap{max-width:1000px; margin:0 auto; padding:26px 20px 70px}
+
+  /* ---------- top bar ---------- */
+  .topbar{display:flex; align-items:center; justify-content:space-between; gap:12px; padding-bottom:34px}
+  .brand{display:flex; align-items:center; gap:11px}
+  .logo{
+    width:44px; height:44px; border-radius:50%;
+    background:linear-gradient(145deg,#1b3768,#0a1220 70%);
+    border:1px solid var(--line-strong);
+    box-shadow:0 6px 20px rgba(0,0,0,.45), inset 0 1px 0 rgba(255,255,255,.12);
+    display:grid; place-items:center; font-size:15px; font-weight:900; letter-spacing:.5px;
+  }
+  .logo b{color:var(--red)}
+  .brand-txt{font-weight:800; letter-spacing:.3px; font-size:15px}
+  .brand-sub{display:block; font-weight:500; font-size:12px; color:var(--muted); letter-spacing:.2px}
+  .status{
+    display:inline-flex; align-items:center; gap:7px;
+    border:1px solid var(--line-strong); background:rgba(16,29,49,.6);
+    color:#cfe0f7; font-size:12px; padding:7px 13px; border-radius:999px;
+    backdrop-filter:blur(8px); white-space:nowrap;
+  }
+  .dot{width:7px; height:7px; border-radius:50%; background:#39d98a; box-shadow:0 0 0 0 rgba(57,217,138,.6); animation:pulse 2.4s infinite}
+  @keyframes pulse{0%{box-shadow:0 0 0 0 rgba(57,217,138,.5)}70%{box-shadow:0 0 0 9px rgba(57,217,138,0)}100%{box-shadow:0 0 0 0 rgba(57,217,138,0)}}
+
+  /* ---------- hero ---------- */
+  .hero{max-width:720px; animation:rise .7s ease both}
+  .eyebrow{
+    display:inline-flex; align-items:center; gap:8px; font-size:11.5px; letter-spacing:2.4px;
+    text-transform:uppercase; color:var(--gold); margin-bottom:16px; font-weight:700;
+  }
+  .eyebrow::before{content:""; width:26px; height:1px; background:linear-gradient(90deg,var(--gold),transparent)}
+  h1{font-size:clamp(30px,6vw,44px); line-height:1.12; letter-spacing:-1px; font-weight:900; margin-bottom:16px}
+  h1 .grad{
+    background:linear-gradient(100deg,#ff6a6a 0%,#ff3b3b 42%,#f5c451 100%);
+    -webkit-background-clip:text; background-clip:text; color:transparent;
+  }
+  .lead{color:#b3c3da; font-size:16.5px; max-width:640px}
+  .chips{display:flex; flex-wrap:wrap; gap:8px; margin:22px 0 4px}
+  .chip{
+    background:rgba(18,32,55,.7); border:1px solid var(--line); color:#cfe0f7;
+    font-size:12.5px; padding:7px 12px; border-radius:999px; backdrop-filter:blur(6px);
+    transition:transform .18s ease, border-color .18s ease;
+  }
+  .chip:hover{transform:translateY(-2px); border-color:var(--line-strong)}
+  .cta{display:flex; flex-wrap:wrap; gap:11px; margin-top:26px}
+  .btn{
+    display:inline-flex; align-items:center; justify-content:center; gap:8px;
+    padding:14px 22px; border-radius:14px; font-weight:750; text-decoration:none; font-size:14.5px;
+    transition:transform .18s ease, box-shadow .18s ease, background .18s ease, border-color .18s ease;
+  }
+  .btn:hover{transform:translateY(-2px)}
+  .btn-primary{
+    background:linear-gradient(135deg,#ff4d4d,#c21313); color:#fff;
+    box-shadow:0 12px 30px rgba(255,59,59,.28), inset 0 1px 0 rgba(255,255,255,.18);
+  }
+  .btn-primary:hover{box-shadow:0 16px 38px rgba(255,59,59,.38)}
+  .btn-ghost{
+    border:1px solid var(--line-strong); color:var(--text);
+    background:rgba(16,29,49,.6); backdrop-filter:blur(8px);
+  }
+  .btn-ghost:hover{border-color:rgba(255,255,255,.35); background:rgba(22,38,62,.75)}
+
+  /* ---------- sections ---------- */
+  section{margin-top:56px; animation:rise .7s ease both}
+  @keyframes rise{from{opacity:0; transform:translateY(14px)} to{opacity:1; transform:none}}
+  .sec-head{display:flex; align-items:baseline; justify-content:space-between; gap:14px; margin-bottom:18px}
+  h2{
+    font-size:12px; letter-spacing:2.6px; text-transform:uppercase;
+    color:var(--gold); font-weight:800;
+  }
+  .sec-note{color:#7186a2; font-size:12.5px}
+
   .grid{display:grid; gap:14px}
-  @media(min-width:720px){ .grid.g3{grid-template-columns:repeat(3,1fr)} .grid.g2{grid-template-columns:repeat(2,1fr)} }
-  .card{background:linear-gradient(180deg,var(--card),#101a2b); border:1px solid var(--line); border-radius:16px; padding:18px}
-  .card h3{font-size:16px; margin-bottom:6px}
-  .card p{color:var(--muted); font-size:14px}
-  .ico{font-size:20px; display:block; margin-bottom:8px}
-  .work{border-left:3px solid var(--red); padding-left:14px}
-  .work h3{font-size:18px; margin-bottom:4px}
-  .work .tags{display:flex; flex-wrap:wrap; gap:6px; margin-top:10px}
-  .tag{font-size:11.5px; color:#b9cae4; border:1px solid var(--line); padding:4px 9px; border-radius:8px; background:#0e1a2c}
-  .work p{color:var(--muted); font-size:14.5px; margin-top:6px}
+  @media(min-width:760px){ .grid.g3{grid-template-columns:repeat(3,1fr)} .grid.g2{grid-template-columns:repeat(2,1fr)} }
+
+  .card{
+    position:relative;
+    background:linear-gradient(180deg, rgba(24,39,63,.82), rgba(13,23,38,.85));
+    border:1px solid var(--line); border-radius:var(--radius); padding:20px;
+    backdrop-filter:blur(10px);
+    box-shadow:0 10px 26px rgba(0,0,0,.28), inset 0 1px 0 rgba(255,255,255,.05);
+    transition:transform .2s ease, border-color .2s ease, box-shadow .2s ease;
+    overflow:hidden;
+  }
+  .card::after{
+    content:""; position:absolute; inset:0; border-radius:inherit; pointer-events:none;
+    background:radial-gradient(320px 120px at 15% -20%, rgba(255,255,255,.09), transparent 70%);
+  }
+  .card:hover{transform:translateY(-3px); border-color:var(--line-strong); box-shadow:0 16px 34px rgba(0,0,0,.38)}
+  .card h3{font-size:15.5px; margin-bottom:6px; letter-spacing:-.2px}
+  .card p{color:var(--muted); font-size:13.5px}
+  .ico{
+    width:38px; height:38px; border-radius:12px; display:grid; place-items:center;
+    font-size:18px; margin-bottom:12px;
+    background:linear-gradient(145deg, rgba(255,59,59,.16), rgba(90,169,255,.10));
+    border:1px solid var(--line);
+  }
+
+  /* ---------- live bots ---------- */
+  .bot{
+    display:flex; flex-direction:column; gap:12px;
+    background:linear-gradient(160deg, rgba(28,45,72,.9), rgba(12,21,35,.92));
+    border:1px solid var(--line-strong); border-radius:var(--radius); padding:22px;
+    box-shadow:0 14px 34px rgba(0,0,0,.32);
+    transition:transform .2s ease, box-shadow .2s ease, border-color .2s ease;
+  }
+  .bot:hover{transform:translateY(-3px); box-shadow:0 20px 44px rgba(0,0,0,.42); border-color:rgba(255,255,255,.3)}
+  .bot-top{display:flex; align-items:center; gap:12px}
+  .bot-ic{
+    width:44px; height:44px; border-radius:14px; display:grid; place-items:center; font-size:20px;
+    background:linear-gradient(145deg, rgba(90,169,255,.22), rgba(255,59,59,.14));
+    border:1px solid var(--line-strong);
+  }
+  .bot-name{font-weight:800; font-size:15.5px}
+  .bot-handle{color:var(--sky); font-size:12.5px; font-weight:600}
+  .bot p{color:var(--muted); font-size:13.5px}
+  .bot .btn{padding:11px 18px; font-size:13.5px; margin-top:2px}
+  .live-tag{
+    margin-left:auto; font-size:10.5px; letter-spacing:1.4px; text-transform:uppercase;
+    color:#39d98a; border:1px solid rgba(57,217,138,.35); background:rgba(57,217,138,.08);
+    padding:4px 9px; border-radius:999px; font-weight:800; white-space:nowrap;
+  }
+
+  /* ---------- case studies ---------- */
+  .work{
+    position:relative; padding:22px 22px 22px 24px; border-radius:var(--radius);
+    background:linear-gradient(180deg, rgba(20,33,54,.75), rgba(11,19,32,.8));
+    border:1px solid var(--line);
+  }
+  .work::before{
+    content:""; position:absolute; left:0; top:18px; bottom:18px; width:3px; border-radius:3px;
+    background:linear-gradient(180deg,var(--red),#7a0d0d);
+  }
+  .work h3{font-size:17.5px; margin-bottom:6px; letter-spacing:-.3px}
+  .work p{color:var(--muted); font-size:14px}
+  .tags{display:flex; flex-wrap:wrap; gap:6px; margin-top:12px}
+  .tag{font-size:11px; color:#b9cae4; border:1px solid var(--line); padding:4px 9px; border-radius:8px; background:rgba(14,26,44,.8)}
+
+  /* ---------- process ---------- */
   ol.steps{list-style:none; counter-reset:s; display:grid; gap:12px}
-  ol.steps li{counter-increment:s; display:flex; gap:12px; align-items:flex-start; background:#101a2b; border:1px solid var(--line); border-radius:14px; padding:14px}
-  ol.steps li::before{content:counter(s); min-width:28px; height:28px; border-radius:50%; background:var(--red); color:#fff; display:grid; place-items:center; font-weight:800; font-size:14px}
-  ol.steps b{display:block; font-size:15px}
-  ol.steps span{color:var(--muted); font-size:14px}
-  table{width:100%; border-collapse:collapse; font-size:14.5px; overflow:hidden; border-radius:14px}
-  th,td{padding:13px 14px; text-align:left; border-bottom:1px solid var(--line)}
-  th{background:#0f1b2e; color:#cfe0f7; font-size:12.5px; letter-spacing:1px; text-transform:uppercase}
+  ol.steps li{
+    counter-increment:s; display:flex; gap:14px; align-items:flex-start;
+    background:rgba(16,29,49,.62); border:1px solid var(--line); border-radius:16px; padding:16px;
+    transition:border-color .18s ease, transform .18s ease;
+  }
+  ol.steps li:hover{border-color:var(--line-strong); transform:translateX(2px)}
+  ol.steps li::before{
+    content:counter(s); min-width:30px; height:30px; border-radius:50%; color:#fff; font-weight:800; font-size:14px;
+    display:grid; place-items:center; background:linear-gradient(145deg,#ff4d4d,#a80f0f);
+    box-shadow:0 6px 16px rgba(255,59,59,.25);
+  }
+  ol.steps b{display:block; font-size:15px; margin-bottom:2px}
+  ol.steps span{color:var(--muted); font-size:13.5px}
+
+  /* ---------- pricing ---------- */
+  .table-wrap{border:1px solid var(--line); border-radius:var(--radius); overflow:hidden; background:rgba(13,23,38,.65); backdrop-filter:blur(8px)}
+  table{width:100%; border-collapse:collapse; font-size:14px}
+  th,td{padding:14px 16px; text-align:left; border-bottom:1px solid var(--line)}
+  th{background:rgba(18,31,52,.9); color:#cfe0f7; font-size:11px; letter-spacing:1.6px; text-transform:uppercase; font-weight:800}
   td:last-child,th:last-child{text-align:right; white-space:nowrap}
   tr:last-child td{border-bottom:none}
+  tbody tr{transition:background .16s ease}
+  tbody tr:hover{background:rgba(255,255,255,.03)}
   .price{color:var(--gold); font-weight:800}
-  .note{color:var(--muted); font-size:13px; margin-top:10px}
-  .contact{background:linear-gradient(135deg,#172542,#0d1728); border:1px solid var(--line); border-radius:18px; padding:24px; text-align:center}
-  .contact h2{color:var(--gold); margin-bottom:8px}
-  .contact p{color:var(--muted); font-size:14px}
-  footer{margin-top:40px; color:#6f819b; font-size:12.5px; text-align:center}
-  .bn{font-family:"Noto Sans Bengali",-apple-system,"Segoe UI",sans-serif}
+  .pkg{font-weight:750}
+  .note{color:#7186a2; font-size:12.5px; margin-top:12px}
+
+  /* ---------- contact ---------- */
+  .contact{
+    position:relative; overflow:hidden; text-align:center; padding:34px 24px; border-radius:24px;
+    background:
+      radial-gradient(500px 200px at 50% 0%, rgba(255,59,59,.16), transparent 70%),
+      linear-gradient(160deg, rgba(24,41,68,.92), rgba(10,18,30,.95));
+    border:1px solid var(--line-strong);
+    box-shadow:0 20px 50px rgba(0,0,0,.4);
+  }
+  .contact h2{color:var(--gold); margin-bottom:10px}
+  .contact-title{font-size:clamp(22px,4.4vw,30px); font-weight:900; letter-spacing:-.6px; margin-bottom:10px}
+  .contact p{color:var(--muted); font-size:14px; max-width:520px; margin:0 auto}
+  .contact .cta{justify-content:center; margin-top:22px}
+  .contact .meta{margin-top:16px; font-size:12.5px; color:#7186a2}
+
+  footer{margin-top:44px; text-align:center; color:#5f7089; font-size:12px}
+  footer a{color:#7b8ea8; text-decoration:none}
 </style>
 </head>
 <body>
@@ -71,60 +240,106 @@
   <div class="topbar">
     <div class="brand">
       <div class="logo">S<b>B</b></div>
-      <div>SELIM SB<br><span style="font-weight:500;color:var(--muted);font-size:12.5px">Telegram Bot Developer</span></div>
+      <div>
+        <div class="brand-txt">SELIM SB</div>
+        <span class="brand-sub">Telegram Bot Developer</span>
+      </div>
     </div>
-    <div class="pill">Available for work</div>
+    <div class="status"><span class="dot"></span>Available for work</div>
   </div>
 
-  <h1>Custom <span>Telegram bots</span> that run your business 24/7.</h1>
-  <p class="lead">
-    I build production Telegram bots for shops, communities and service businesses:
-    order handling, payment integration, admin dashboards, Google Sheets and database sync,
-    scheduled automation and API integrations. Python under the hood, cloud hosted, no monthly server cost.
-  </p>
-
-  <div class="chips">
-    <span class="chip">Python</span>
-    <span class="chip">pyTelegramBotAPI / aiogram</span>
-    <span class="chip">REST APIs</span>
-    <span class="chip">Google Sheets API</span>
-    <span class="chip">Firebase / Firestore</span>
-    <span class="chip">Payment gateways</span>
-    <span class="chip">GitHub Actions hosting</span>
-    <span class="chip">Admin panels</span>
+  <div class="hero">
+    <div class="eyebrow">Python · Telegram API · Automation</div>
+    <h1>Custom <span class="grad">Telegram bots</span><br>that run your business 24/7.</h1>
+    <p class="lead">
+      I build production Telegram bots for shops, communities and service businesses:
+      order handling, payment integration, admin dashboards, Google Sheets and database sync,
+      scheduled automation and API integrations. Clean Python, cloud hosted, no monthly server bill.
+    </p>
+    <div class="chips">
+      <span class="chip">Python</span>
+      <span class="chip">pyTelegramBotAPI / aiogram</span>
+      <span class="chip">REST APIs</span>
+      <span class="chip">Google Sheets API</span>
+      <span class="chip">Firebase</span>
+      <span class="chip">Payment gateways</span>
+      <span class="chip">GitHub Actions hosting</span>
+      <span class="chip">Admin panels</span>
+    </div>
+    <div class="cta">
+      <a class="btn btn-primary" href="#contact">Hire me</a>
+      <a class="btn btn-ghost" href="#bots">Try my live bots</a>
+    </div>
   </div>
 
-  <div class="cta">
-    <a class="btn btn-primary" href="#contact">Hire me</a>
-    <a class="btn btn-ghost" href="#work">See my work</a>
-  </div>
+  <section id="bots">
+    <div class="sec-head">
+      <h2>Live on Telegram</h2>
+      <span class="sec-note">Open and test right now</span>
+    </div>
+    <div class="grid g2">
+
+      <div class="bot">
+        <div class="bot-top">
+          <div class="bot-ic">👤</div>
+          <div>
+            <div class="bot-name">User Info Expert</div>
+            <div class="bot-handle">@UserInfoXpertBot</div>
+          </div>
+          <span class="live-tag">Live</span>
+        </div>
+        <p>Player profile and account lookup bot: UID based info check, profile card, stats and quick lookups served inside Telegram.</p>
+        <a class="btn btn-primary" href="https://t.me/UserInfoXpertBot">Open @UserInfoXpertBot</a>
+      </div>
+
+      <div class="bot">
+        <div class="bot-top">
+          <div class="bot-ic">🎮</div>
+          <div>
+            <div class="bot-name">FF Like &amp; Profile Bot</div>
+            <div class="bot-handle">@FFLikeDB_Bot</div>
+          </div>
+          <span class="live-tag">Live</span>
+        </div>
+        <p>Community bot with 24/7 uptime: user accounts, saved UID, profile cards, history, referrals, admin analytics dashboard and broadcast tools.</p>
+        <a class="btn btn-primary" href="https://t.me/FFLikeDB_Bot">Open @FFLikeDB_Bot</a>
+      </div>
+
+    </div>
+  </section>
 
   <section id="services">
-    <h2>What I build</h2>
+    <div class="sec-head">
+      <h2>What I build</h2>
+      <span class="sec-note">Turnkey, not templates</span>
+    </div>
     <div class="grid g3">
-      <div class="card"><span class="ico">🛒</span><h3>E-commerce order bots</h3><p>Product catalog, cart, order placement, delivery status and customer tracking inside Telegram.</p></div>
-      <div class="card"><span class="ico">💳</span><h3>Payment integration</h3><p>bKash, Nagad, SSLCommerz and Stripe flows with automatic order confirmation and receipts.</p></div>
-      <div class="card"><span class="ico">📊</span><h3>Admin dashboard</h3><p>Live user analytics, revenue reports, broadcast, role based admin access and audit logging.</p></div>
-      <div class="card"><span class="ico">🗂️</span><h3>Sheets and database sync</h3><p>Google Sheets, Firebase or SQL as the backend. Read, write and sync without manual work.</p></div>
-      <div class="card"><span class="ico">⏰</span><h3>Automation and scheduling</h3><p>Daily jobs, reminders, report delivery and recurring campaigns that run without a computer on.</p></div>
-      <div class="card"><span class="ico">🔌</span><h3>API integrations</h3><p>Connect your existing website, CRM, courier, SMS or AI service to Telegram in one flow.</p></div>
-      <div class="card"><span class="ico">👥</span><h3>Community tools</h3><p>Profile lookup, referral tracking, leaderboard, cooldowns and rate limits for large user bases.</p></div>
-      <div class="card"><span class="ico">🤖</span><h3>AI assistants</h3><p>Support bots with AI replies, product recommendations and automated content generation.</p></div>
-      <div class="card"><span class="ico">☁️</span><h3>Free 24/7 hosting</h3><p>Deployed on cloud runners with auto restart and zero server bills, or on your own VPS if you prefer.</p></div>
+      <div class="card"><div class="ico">🛒</div><h3>E-commerce order bots</h3><p>Product catalog, cart, order placement, delivery status and customer tracking inside Telegram.</p></div>
+      <div class="card"><div class="ico">💳</div><h3>Payment integration</h3><p>bKash, Nagad, SSLCommerz and Stripe flows with automatic order confirmation and receipts.</p></div>
+      <div class="card"><div class="ico">📊</div><h3>Admin dashboard</h3><p>Live user analytics, revenue reports, broadcast, role based admin access and audit logging.</p></div>
+      <div class="card"><div class="ico">🗂️</div><h3>Sheets and database sync</h3><p>Google Sheets, Firebase or SQL as the backend. Read, write and sync without manual work.</p></div>
+      <div class="card"><div class="ico">⏰</div><h3>Automation and scheduling</h3><p>Daily jobs, reminders, report delivery and recurring campaigns that run without a computer on.</p></div>
+      <div class="card"><div class="ico">🔌</div><h3>API integrations</h3><p>Connect your website, CRM, courier, SMS or AI service to Telegram in one flow.</p></div>
+      <div class="card"><div class="ico">👥</div><h3>Community tools</h3><p>Profile lookup, referral tracking, leaderboard, cooldowns and rate limits for large user bases.</p></div>
+      <div class="card"><div class="ico">🤖</div><h3>AI assistants</h3><p>Support bots with AI replies, product recommendations and automated content generation.</p></div>
+      <div class="card"><div class="ico">☁️</div><h3>Free 24/7 hosting</h3><p>Deployed on cloud runners with auto restart and zero server bills, or on your own VPS if you prefer.</p></div>
     </div>
   </section>
 
   <section id="work">
-    <h2>Selected work</h2>
-    <div class="grid" style="gap:22px">
+    <div class="sec-head">
+      <h2>Selected work</h2>
+      <span class="sec-note">Real projects, running daily</span>
+    </div>
+    <div class="grid" style="gap:16px">
 
       <div class="work">
         <h3>Community automation bot for a gaming community</h3>
         <p>
-          A Telegram bot serving a Free Fire community: user registration, saved UID management,
-          player profile and stats lookup, like history, referral tracking, reminders, cooldowns,
+          A Telegram bot serving a Free Fire community: registration, saved UID management,
+          player profile and stats lookup, history, referral tracking, reminders, cooldowns,
           multi admin support and a live analytics dashboard with broadcast tools.
-          Runs 24/7 on cloud runners with automatic token health checks and dead account cleanup.
+          Runs 24/7 on cloud runners with automatic health checks and cleanup.
         </p>
         <div class="tags">
           <span class="tag">Python</span><span class="tag">pyTelegramBotAPI</span>
@@ -136,10 +351,10 @@
       <div class="work">
         <h3>Marketplace content automation for an e-commerce brand</h3>
         <p>
-          An end to end pipeline for a multi vendor marketplace: reads products from Google Sheets,
-          generates SEO titles, product descriptions, social media captions in Bengali and English,
-          produces branded AI creatives and writes everything back to the sheet with status tracking.
-          Runs twice a day without any manual work.
+          End to end pipeline for a multi vendor marketplace: reads products from Google Sheets,
+          generates SEO titles, product descriptions and social captions in Bengali and English,
+          creates branded AI creatives and writes everything back to the sheet with status tracking.
+          Runs twice a day with zero manual work.
         </p>
         <div class="tags">
           <span class="tag">Google Sheets API</span><span class="tag">AI content generation</span>
@@ -151,7 +366,7 @@
         <h3>Secure admin dashboard</h3>
         <p>
           Multi vendor admin panel with role based access control, server side MFA verification,
-          audit logging, order and inventory management, SEO controls and permission handling for staff accounts.
+          audit logging, order and inventory management, SEO controls and staff permission handling.
         </p>
         <div class="tags">
           <span class="tag">Firebase</span><span class="tag">RBAC</span>
@@ -163,52 +378,65 @@
   </section>
 
   <section id="process">
-    <h2>How we work</h2>
+    <div class="sec-head">
+      <h2>How we work</h2>
+      <span class="sec-note">No surprises</span>
+    </div>
     <ol class="steps">
-      <li><div><b>Requirement call (30 min)</b><span>You describe the job in plain words. I reply with a fixed scope, price and delivery date.</span></div></li>
-      <li><div><b>Working demo in 2 days</b><span>You see a live bot doing the core job before full payment. No surprises at the end.</span></div></li>
+      <li><div><b>Requirement call, 30 minutes</b><span>You describe the job in plain words. I reply with a fixed scope, price and delivery date.</span></div></li>
+      <li><div><b>Working demo in 2 days</b><span>You see a live bot doing the core job before the balance payment.</span></div></li>
       <li><div><b>Delivery in 3 to 7 days</b><span>Full source code, deployment guide and a short video walkthrough.</span></div></li>
       <li><div><b>7 days free bug support</b><span>Anything broken from my side is fixed free. After that, optional monthly maintenance.</span></div></li>
     </ol>
   </section>
 
   <section id="pricing">
-    <h2>Packages</h2>
-    <table>
-      <tr><th>Package</th><th>What you get</th><th>Price</th></tr>
-      <tr>
-        <td><b>Starter</b></td>
-        <td>Single purpose bot, up to 5 commands, admin broadcast, logs</td>
-        <td><span class="price">৳4,000 / $35</span></td>
-      </tr>
-      <tr>
-        <td><b>Business</b></td>
-        <td>Order flow, payment gateway, user accounts, Google Sheets database, admin panel</td>
-        <td><span class="price">৳12,000 / $110</span></td>
-      </tr>
-      <tr>
-        <td><b>Custom</b></td>
-        <td>Multi role system, external API integrations, analytics dashboard, scheduled automation</td>
-        <td><span class="price">from ৳25,000 / $250</span></td>
-      </tr>
-      <tr>
-        <td><b>Maintenance</b></td>
-        <td>Monitoring, updates, new features, bug fixes</td>
-        <td><span class="price">৳2,000 / $18 per month</span></td>
-      </tr>
-    </table>
+    <div class="sec-head">
+      <h2>Packages</h2>
+      <span class="sec-note">Fixed price, fixed scope</span>
+    </div>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr><th>Package</th><th>What you get</th><th>Price</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td class="pkg">Starter</td>
+            <td>Single purpose bot, up to 5 commands, admin broadcast, logs</td>
+            <td><span class="price">৳4,000 / $35</span></td>
+          </tr>
+          <tr>
+            <td class="pkg">Business</td>
+            <td>Order flow, payment gateway, user accounts, Google Sheets database, admin panel</td>
+            <td><span class="price">৳12,000 / $110</span></td>
+          </tr>
+          <tr>
+            <td class="pkg">Custom</td>
+            <td>Multi role system, external API integrations, analytics dashboard, scheduled automation</td>
+            <td><span class="price">from ৳25,000 / $250</span></td>
+          </tr>
+          <tr>
+            <td class="pkg">Maintenance</td>
+            <td>Monitoring, updates, new features, bug fixes</td>
+            <td><span class="price">৳2,000 / $18 monthly</span></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
     <p class="note">Payment: 50% advance, 50% on delivery. bKash, Nagad or bank transfer. International clients: Wise or USDT.</p>
   </section>
 
   <section id="contact">
     <div class="contact">
       <h2>Let's build your bot</h2>
-      <p>Send a voice note or a short message describing what you need. You will get a reply with price and timeline the same day.</p>
-      <div class="cta" style="justify-content:center;margin-top:18px">
-        <a class="btn btn-primary" href="https://t.me/Silent7D">Telegram: @Silent7D</a>
+      <div class="contact-title">Tell me what you need, get price in the same day</div>
+      <p>Send a voice note or a short message describing your idea. I reply with a fixed price, timeline and a working plan.</p>
+      <div class="cta">
+        <a class="btn btn-primary" href="https://t.me/Silent7D">Telegram · @Silent7D</a>
         <a class="btn btn-ghost" href="https://wa.me/8801613052847">WhatsApp</a>
       </div>
-      <p style="margin-top:14px;font-size:13px">Dhaka, Bangladesh · Working hours 10 AM to 10 PM (GMT+6) · English and বাংলা</p>
+      <div class="meta">Dhaka, Bangladesh · 10 AM to 10 PM (GMT+6) · English and বাংলা</div>
     </div>
   </section>
 
